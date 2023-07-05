@@ -1,0 +1,220 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# # crime reported in Toronto
+
+# In[241]:
+
+
+import numpy as np
+import random 
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+import plotly.express as px
+import plotly.graph_objects as go
+
+
+# In[242]:
+
+
+crime_in_toronto = pd.read_csv('C://Users//mande//OneDrive//Desktop/crime.csv')
+
+
+# In[243]:
+
+
+df= pd.DataFrame(crime_in_toronto)
+df
+
+
+# # crime in different locations 
+
+# In 2021, 34,277 recorded cases in Toronto, illustrating the city's.In 2021, there will be 34,277 recorded cases in Toronto
+
+# In[244]:
+
+
+type1 = df['premises_type'].unique()
+type1
+
+
+# In[245]:
+
+
+Commercial= df[df['premises_type']== 'Commercial'].count()
+House_crime= df[df['premises_type']== 'House'].count()
+Outside_crime=df[df['premises_type']== 'Outside'].count()
+Transit_crime=df[df['premises_type']== 'Transit'].count()
+other_crime=df[df['premises_type']== 'Other'].count()
+Educational_crime=df[df['premises_type']== 'Educational'].count()
+
+
+# In[246]:
+
+
+# Count premises type
+commercial_crime = df[df['premises_type'] == 'Commercial'].count()['event_unique_id']
+house_crime = df[df['premises_type'] == 'House'].count()['event_unique_id']
+outside_crime = df[df['premises_type'] == 'Outside'].count()['event_unique_id']
+transit_crime = df[df['premises_type'] == 'Transit'].count()['event_unique_id']
+other_crime = df[df['premises_type'] == 'Other'].count()['event_unique_id']
+educational_crime = df[df['premises_type'] == 'Educational'].count()['event_unique_id']
+
+# Create a dataframe
+data = {'Premises Type': ['Commercial', 'House', 'Outside', 'Transit', 'Other', 'Educational'],
+        'Count': [commercial_crime, house_crime, outside_crime, transit_crime, other_crime, educational_crime]}
+
+# pie chart 
+fig = px.pie(data, values='Count', names='Premises Type', title='Crime Distribution by Premises Type')
+
+# Show pie chart
+fig.show()
+# Create a dataframe for the bar chart
+data_bar = {'Premises Type': ['Commercial', 'House', 'Outside', 'Transit', 'Other', 'Educational'],
+            'Count': [commercial_crime, house_crime, outside_crime, transit_crime, other_crime, educational_crime]}
+
+# Create the bar chart using Plotly Express
+fig_bar = px.bar(data_bar, x='Premises Type', y='Count', title='Crime Distribution by Premises Type')
+
+# Show the bar chart
+fig_bar.show()
+
+
+# According to the data, outdoor places have the largest number of crimes (9402 incidents), 
+# need for greater safety measures in publicspaces. Each year, around 6000 crimes occur in commercial 
+# and residential sectors, underscoring the significance of security in both commercial and domestic places.
+# There are 1156 crimes reported in transit places, compared to around 2000 crimes reported in other undefined areas.
+# These findings point to the necessity for specific tactics to combat crime in various situations and assure community 
+# safety generally.
+
+# # offence	
+
+# In[247]:
+
+
+type_offence = df['offence'].unique()
+
+
+# In[248]:
+
+
+# Count the occurrences of each offence type
+offence_counts = df['offence'].value_counts().reset_index()
+
+# Rename the columns
+offence_counts.columns = ['Offence Type', 'Count']
+
+# Sort the offences based on count in descending order
+offence_counts = offence_counts.sort_values('Count', ascending=False)
+
+# Calculate the total number of offences
+total_offences = len(df)
+
+# Calculate the percentage of each offence type
+offence_percentages = (offence_counts['Count'] / total_offences) * 100
+
+# Create a summary list
+summary_list = []
+for index, row in offence_counts.iterrows():
+    offence_type = row['Offence Type']
+    count = row['Count']
+    percentage = offence_percentages[index]
+    summary = f"{offence_type}: {count} cases ({percentage:.2f}%)"
+    summary_list.append(summary)
+# Print the summary list
+for summary in summary_list:
+    print(summary)
+
+
+# Based on the statistics supplied, the distribution of crime in Toronto reveals interesting tendencies. Assault is the most common infraction, accounting for 37.16% of all instances, closely followed by Theft of Motor Vehicle (19.08%). Break and Enter comes third, accounting for 14.14% of all instances. Robbery of various categories, such as Robbery - Mugging, Robbery - Business, and Robbery - Other, account for around 1% of the total. While other acts have lower numbers, they nonetheless reflect the city's range of criminal activity. It is crucial to highlight that this research is only a snapshot and may not represent the entire criminal environment. For a complete understanding of crime patterns in Toronto, additional information such as temporal and geographical elements are required.
+
+# # occurrencemonth
+
+# In[249]:
+
+
+# Group the data by month and count 
+monthly_counts = df.groupby('occurrencemonth').size().reset_index(name='Count')
+monthly_counts
+
+
+# # mamximum crime can be seen in oct,followed by sept, where as least can we seen april and feb 
+
+# In[250]:
+
+
+# Count the occurrences of each month
+monthly_counts = monthly.value_counts().reset_index()
+monthly_counts.columns = ['Month', 'Count']
+
+
+# In[251]:
+
+
+# order of the months
+month_order = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+
+
+# In[252]:
+
+
+# Sort the months based on the specified order
+monthly_counts = monthly_counts.sort_values(by='Month', key=lambda x: pd.Categorical(x, categories=month_order))
+
+# Create a line graph
+fig = px.line(monthly_counts, x='Month', y='Count', title='Occurrences by Month')
+
+# Customize the appearance
+fig.update_layout(xaxis_title='Month', yaxis_title='Count')
+
+# Display the line graph
+fig.show()
+
+
+# # occurrencedayofweek	
+
+# In[253]:
+
+
+occurrencemonth_in_weekdays = df['occurrencedayofweek'].unique()
+occurrencemonth_in_weekdays 
+
+
+# In[254]:
+
+
+# Group the data by month and count the occurrences
+weekly_counts = df.groupby('occurrencedayofweek').size().reset_index(name='Count')
+weekly_counts
+
+The most crime is recorded on Fridays, although there is no significant variation between weekdays and weekends; crime is reported every day.
+# # Neighbourhood
+
+# In[255]:
+
+
+# Create a bar chart for Neighbourhood counts
+fig_neighbourhood = go.Figure(data=go.Bar(x=neighbourhood_counts['Neighbourhood'], y=neighbourhood_counts['Count']))
+fig_neighbourhood.update_layout(title='Occurrences by Neighbourhood', xaxis_title='Neighbourhood', yaxis_title='Count')
+fig_neighbourhood.show()
+
+
+# In[256]:
+
+
+# Create map for Neighbourhood counts
+fig_map = px.choropleth_mapbox(neighbourhood_counts, locations='Neighbourhood', color='Count',
+                               color_continuous_scale='Viridis', mapbox_style='carto-positron',
+                               center={'lat': 43.70, 'lon': -79.42}, zoom=10, opacity=0.5,
+                               labels={'Count': 'Occurrences'})
+fig_map.update_layout(title='Occurrences by Neighbourhood Map')
+fig_map.show()
+
+
+# In[ ]:
+
+
+
+
